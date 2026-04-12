@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estimasi Emisi CO₂ - Lampu Merah ITS Medan</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="main-title">🌿 Estimasi Emisi CO₂ Akibat Kemacetan<br>di Lampu Merah Kota Medan dengan Pendekatan Integral Tentu dan Teknik Pecahan Parsial</h1>
+            <p class="subtitle">Studi Kasus: Lampu Merah Sekitar ITS Medan</p>
+            <p class="credit">Data Observasi: 7 Lokasi Persimpangan</p>
+        </header>
+
+        <!-- NAVIGASI STICKY -->
+        <div class="nav-scroll sticky-nav">
+            <button class="nav-scroll-btn" data-target="dashboard">📊 Dashboard</button>
+            <button class="nav-scroll-btn" data-target="analisis">📐 Analisis</button>
+            <button class="nav-scroll-btn" data-target="dampak">⚠️ Dampak CO₂</button>
+            <button class="nav-scroll-btn" data-target="rekomendasi">💡 Rekomendasi</button>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard-section" class="dashboard-section">
+            <h2 class="section-title">📊 Dashboard</h2>
+            <div class="card">
+                <h3>📈 Grafik Riwayat Emisi (Setiap Perhitungan)</h3>
+                <p class="chart-caption">Setiap titik mewakili satu kali perhitungan. Sumbu X = waktu perhitungan, Sumbu Y = total emisi CO₂ (gram).</p>
+                <canvas id="historyChart" width="800" height="350"></canvas>
+                <div class="dashboard-note">✨ Semakin tinggi titik, semakin besar emisi yang dihasilkan.</div>
+            </div>
+        </section>
+
+        <!-- ANALISIS SECTION -->
+        <section id="analisis-section" class="analisis-section">
+            <h2 class="section-title">📐 Analisis</h2>
+            
+            <div class="card input-card">
+                <h3>📊 Input Data Kendaraan</h3>
+                <div class="form-group">
+                    <label for="lokasi">📍 Pilih Lokasi (Data ITS Medan):</label>
+                    <select id="lokasi">
+                        <option value="" disabled selected>-- Pilih Lokasi --</option>
+                        <option value="jamin_ginting">Jamin Ginting - Iskandar Muda</option>
+                        <option value="gatot_subroto">Gatot Subroto - Iskandar Muda</option>
+                        <option value="iskandar_lubis">Iskandar Muda - Abdullah Lubis</option>
+                        <option value="yamin_william">HM. Yamin - William Iskandar</option>
+                        <option value="katamso_anidrus">Katamso - Ani Idrus</option>
+                        <option value="sutomo_yamin">Sutomo - Yamin</option>
+                        <option value="perintis_sutomo">Perintis Kemerdekaan - Sutomo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mobil">🚗 Jumlah Mobil:</label>
+                    <input type="number" id="mobil" placeholder="Contoh: 15" value="" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="motor">🏍️ Jumlah Motor:</label>
+                    <input type="number" id="motor" placeholder="Contoh: 25" value="" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="waktu">⏱️ Waktu Lampu Merah (detik):</label>
+                    <input type="number" id="waktu" placeholder="Contoh: 90" value="90" autocomplete="off">
+                </div>
+                <div id="lokasiInfo" class="lokasi-info" style="display: none;"></div>
+                <button onclick="hitungEmisi()" class="btn-hitung">🔍 Hitung Emisi CO₂</button>
+            </div>
+
+            <div class="card result-card">
+                <h3>📈 Hasil Estimasi</h3>
+                <div class="hasil-container">
+                    <div class="result-item"><span class="result-label">Total Emisi CO₂:</span><span id="totalEmisi" class="result-value">0</span><span class="unit">gram</span></div>
+                    <div class="result-item"><span class="result-label">Dari Mobil:</span><span id="emisiMobil" class="result-value">0</span><span class="unit">gram</span></div>
+                    <div class="result-item"><span class="result-label">Dari Motor:</span><span id="emisiMotor" class="result-value">0</span><span class="unit">gram</span></div>
+                    <div class="result-item highlight"><span class="result-label">Per Siklus:</span><span id="perSiklus" class="result-value">0</span><span class="unit">kg CO₂</span></div>
+                    <div class="result-item"><span class="result-label">Estimasi per Jam (20 siklus):</span><span id="perJam" class="result-value">0</span><span class="unit">kg CO₂</span></div>
+                </div>
+            </div>
+
+            <div class="card formula-card">
+                <h3>📐 Rumus Perhitungan yang Digunakan</h3>
+                <div class="formula-box">
+                    <div class="rumus">
+                        <p class="rumus-title">Integral Tentu (Metode Left Riemann Sum)</p>
+                        <p class="rumus-tex">E = ∫₀ᵀ r(t) dt ≈ Σ_{i=0}^{n-1} r(t_i) · Δt</p>
+                        <p>dengan Δt = 1 detik, tᵢ = i·Δt, n = T (waktu merah).</p>
+                        <p class="rumus-note">Karena r(t) konstan, hasil eksak sama dengan r × T.</p>
+                    </div>
+                    <div class="rumus">
+                        <p class="rumus-title">Laju Emisi (konstan):</p>
+                        <p class="rumus-tex">r = (M × 0.04) + (Mtr × 0.015) gram/detik</p>
+                        <p>Mobil: 2.4 g/menit ≈ 0.04 g/detik | Motor: 0.9 g/menit ≈ 0.015 g/detik</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card riemann-card">
+                <h3>📐 Metode Integral: Left Riemann Sum</h3>
+                <div class="riemann-content">
+                    <p><strong>Definisi:</strong> Metode Left Riemann Sum mengaproksimasi integral tentu dengan menjumlahkan luas persegi panjang yang tingginya diambil dari nilai fungsi di <strong>ujung kiri</strong> setiap subinterval.</p>
+                    <p><strong>Rumus yang dipakai dalam proyek ini:</strong></p>
+                    <p class="rumus-tex">E = ∫₀ᵀ r(t) dt ≈ Σ_{i=0}^{n-1} r(t_i) · Δt</p>
+                    <p>dengan Δt = 1 detik (partisi seragam), tᵢ = i·Δt, n = T (waktu merah).</p>
+                    <p><strong>Mengapa memilih Left Riemann?</strong> Karena laju emisi kendaraan saat idle cenderung konstan, hasilnya sama dengan Right Riemann. Left Riemann lebih mudah diimplementasikan.</p>
+                    <p><strong>Hubungan dengan proyek:</strong> Total emisi CO₂ adalah luas di bawah kurva laju emisi r(t) terhadap waktu. Dengan pendekatan Riemann, kita bisa menghitung luas tersebut secara numerik.</p>
+                    <div class="riemann-note">💡 <strong>Catatan:</strong> Karena r(t) konstan, metode Left Riemann menghasilkan nilai eksak yang sama dengan integral analitik (r × T).</div>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <h3>📊 Visualisasi Kurva Emisi CO₂ terhadap Waktu</h3>
+                <p class="chart-caption">🔴 MERAH = Akumulasi Emisi (gram) | 🔵 BIRU = Laju Emisi (gram/detik)</p>
+                <canvas id="emisiChart" width="800" height="400"></canvas>
+                <div class="integral-info" id="integralInfo">
+                    <p>👈 Masukkan data lalu klik "Hitung Emisi CO₂"</p>
+                </div>
+            </div>
+
+            <div class="card math-card">
+                <h3>🧮 Aplikasi Teknik Pecahan Parsial</h3>
+                <div class="math-content">
+                    <div class="math-formula">
+                        <h4>Model Laju Kedatangan Kendaraan:</h4>
+                        <p class="formula">r(t) = (2t + 5) / (t² + 5t + 6)</p>
+                        <p>Didekomposisi menjadi:</p>
+                        <p class="formula">r(t) = 1/(t+2) + 1/(t+3)</p>
+                    </div>
+                    <div class="math-result">
+                        <p>⏳ Laju akumulasi antrian pada t = <span id="tValue">30</span> detik:</p>
+                        <p><strong id="lajuAkumulasi">0.3833</strong> kendaraan/detik</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card history-card">
+                <h3>📋 Riwayat Perhitungan Emisi</h3>
+                <div class="table-container">
+                    <table class="history-table">
+                        <thead><tr><th>Waktu</th><th>Lokasi</th><th>Mobil</th><th>Motor</th><th>Durasi</th><th>Total Emisi</th><th>Level</th></tr></thead>
+                        <tbody id="historyBody"><tr><td colspan="7">Belum ada data. Hitung emisi terlebih dahulu.</td></tr></tbody>
+                    </table>
+                </div>
+                <button onclick="clearHistory()" class="btn-clear">🗑️ Hapus Riwayat</button>
+            </div>
+        </section>
+
+        <!-- DAMPAK SECTION -->
+        <section id="dampak-section" class="dampak-section">
+            <h2 class="section-title">⚠️ Dampak CO₂</h2>
+            <div class="card">
+                <h3>✅ Dampak Positif (Dalam Kadar Normal)</h3>
+                <div class="dampak-grid">
+                    <div class="dampak-item positif"><div class="dampak-icon">🌱</div><h4>Fotosintesis Tanaman</h4><p>CO₂ adalah bahan utama fotosintesis yang menghasilkan oksigen.</p></div>
+                    <div class="dampak-item positif"><div class="dampak-icon">🌡️</div><h4>Efek Rumah Kaca Alami</h4><p>CO₂ membantu menjaga suhu bumi tetap hangat.</p></div>
+                    <div class="dampak-item positif"><div class="dampak-icon">🏭</div><h4>Industri & Ekonomi</h4><p>CO₂ digunakan dalam industri minuman berkarbonasi.</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>❌ Dampak Negatif (Berlebihan)</h3>
+                <div class="dampak-grid">
+                    <div class="dampak-item negatif"><div class="dampak-icon">🌊</div><h4>Pemanasan Global</h4><p>CO₂ berlebih memerangkap panas bumi → cuaca ekstrem.</p></div>
+                    <div class="dampak-item negatif"><div class="dampak-icon">🫁</div><h4>Gangguan Kesehatan</h4><p>Paparan CO₂ tinggi menyebabkan sakit kepala, pusing, sesak napas.</p></div>
+                    <div class="dampak-item negatif"><div class="dampak-icon">🐠</div><h4>Asam Laut</h4><p>CO₂ larut di laut → merusak terumbu karang.</p></div>
+                    <div class="dampak-item negatif"><div class="dampak-icon">🌾</div><h4>Gagal Panen</h4><p>Perubahan iklim menyebabkan kekeringan atau banjir.</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📊 Data Emisi CO₂ di Indonesia</h3>
+                <div class="stats-row">
+                    <div class="stat-card"><div class="stat-value">~600 Juta Ton</div><div class="stat-label">Emisi per tahun (2023)</div></div>
+                    <div class="stat-card"><div class="stat-value">25-30%</div><div class="stat-label">Dari Sektor Transportasi</div></div>
+                    <div class="stat-card"><div class="stat-value">100-200 g</div><div class="stat-label">1 Lampu Merah per siklus</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REKOMENDASI SECTION -->
+        <section id="rekomendasi-section" class="rekomendasi-section">
+            <h2 class="section-title">💡 Rekomendasi</h2>
+            <div class="card">
+                <h3>Cara Mengurangi Emisi CO₂ di Lampu Merah</h3>
+                <div class="rekomendasi-grid">
+                    <div class="rekomendasi-item"><div class="rekomendasi-icon">🔌</div><h4>Matikan Mesin Saat Menunggu</h4><p>Jika lampu merah >30 detik, matikan mesin. Mengurangi emisi hingga 50%.</p></div>
+                    <div class="rekomendasi-item"><div class="rekomendasi-icon">🚲</div><h4>Gunakan Transportasi Alternatif</h4><p>Bersepeda atau berjalan kaki untuk jarak dekat.</p></div>
+                    <div class="rekomendasi-item"><div class="rekomendasi-icon">⚡</div><h4>Beralih ke Kendaraan Listrik</h4><p>Emisi 0% saat idle di lampu merah.</p></div>
+                    <div class="rekomendasi-item"><div class="rekomendasi-icon">👥</div><h4>Carpool / Transportasi Umum</h4><p>Satu bus bisa menggantikan 40 mobil.</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>🌳 Rekomendasi Berdasarkan Hasil Hitungan Anda</h3>
+                <div id="rekomendasiDinamis" class="rekomendasi-dinamis">
+                    <p>👈 Belum ada data. Hitung emisi di menu Analisis terlebih dahulu.</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📋 Checklist Aksi Harian</h3>
+                <div class="checklist">
+                    <label class="checklist-item"><input type="checkbox"> Matikan mesin jika menunggu >30 detik</label>
+                    <label class="checklist-item"><input type="checkbox"> Gunakan transportasi umum minimal 1x seminggu</label>
+                    <label class="checklist-item"><input type="checkbox"> Ajak teman carpool saat pergi bersama</label>
+                    <label class="checklist-item"><input type="checkbox"> Rutin servis kendaraan agar emisi optimal</label>
+                    <label class="checklist-item"><input type="checkbox"> Tanam pohon di sekitar rumah</label>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 - Project Kalkulus Integral | Metode Numerik: Left Riemann Sum (Δt=1 detik) | Teknik Pecahan Parsial untuk model antrian</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

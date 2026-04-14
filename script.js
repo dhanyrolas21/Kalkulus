@@ -53,8 +53,28 @@ function updateGrafikKurva(waktuArray, lajuArray, akumulasiArray, totalEmisi, wa
         data: {
             labels: waktuArray,
             datasets: [
-                { label: '🔴 Akumulasi Emisi CO₂ (gram)', data: akumulasiArray, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)', borderWidth: 3, fill: true, tension: 0.1, pointRadius: 0, yAxisID: 'y' },
-                { label: '🔵 Laju Emisi CO₂ (gram/detik)', data: lajuArray, borderColor: '#3b82f6', borderWidth: 2.5, fill: false, tension: 0.1, pointRadius: 0, yAxisID: 'y1' }
+                {
+                    label: '🔴 Akumulasi Emisi CO₂ (gram)',
+                    data: akumulasiArray,
+                    borderColor: '#dc2626',
+                    backgroundColor: 'rgba(220,38,38,0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    yAxisID: 'y'
+                },
+                {
+                    label: '🔵 Laju Emisi CO₂ (gram/detik)',
+                    data: lajuArray,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    yAxisID: 'y1'
+                }
             ]
         },
         options: {
@@ -68,7 +88,7 @@ function updateGrafikKurva(waktuArray, lajuArray, akumulasiArray, totalEmisi, wa
     document.getElementById('integralInfo').innerHTML = `
         <p><strong>∫₀^${waktuDetik} r(t) dt ≈ Σ r(t_i)·1 = ${totalEmisi.toFixed(2)} gram</strong> (Metode Left Riemann Sum, Δt=1 detik)</p>
         <p>📍 ${lokasiTerpilih} | 🚗 ${mobil} mobil | 🏍️ ${motor} motor | ⏱️ ${waktuDetik} detik</p>
-        <p class="rumus-note">✨ Karena r(t) konstan, hasil Riemann sama dengan integral analitik (r × T).</p>
+        <p class="rumus-note">✨ Area berwarna biru di bawah kurva laju menunjukkan luas = total emisi.</p>
     `;
 }
 
@@ -149,7 +169,7 @@ function updateHistoryTable() {
     const tbody = document.getElementById('historyBody');
     if (!tbody) return;
     if (historyData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Belum ada data. Hitung emisi terlebih dahulu.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7">Belum ada data. Hitung emisi terlebih dahulu.</td></tr>';
         return;
     }
     tbody.innerHTML = historyData.map(item => {
@@ -223,7 +243,7 @@ function initLokasiListener() {
     });
 }
 
-// ===== SCROLL SPY YANG LEBIH ANDAL =====
+// SCROLL SPY
 function initScrollSpy() {
     const sections = [
         { id: 'dashboard-section', btnTarget: 'dashboard' },
@@ -232,12 +252,9 @@ function initScrollSpy() {
         { id: 'rekomendasi-section', btnTarget: 'rekomendasi' }
     ];
     const navBtns = document.querySelectorAll('.nav-scroll-btn');
-    
-    // Fungsi untuk menentukan section mana yang sedang aktif berdasarkan posisi scroll
     function updateActiveButton() {
         let currentSection = '';
-        const scrollPosition = window.scrollY + 150; // offset untuk navigasi sticky
-        
+        const scrollPosition = window.scrollY + 150;
         for (let section of sections) {
             const element = document.getElementById(section.id);
             if (element) {
@@ -249,27 +266,18 @@ function initScrollSpy() {
                 }
             }
         }
-        
-        // Jika tidak ada section yang terdeteksi, coba cari dari atas
         if (!currentSection && sections.length > 0) {
             const firstSection = document.getElementById(sections[0].id);
             if (firstSection && window.scrollY < firstSection.offsetTop) {
                 currentSection = sections[0].btnTarget;
             }
         }
-        
-        // Update class active pada tombol
         navBtns.forEach(btn => {
             const target = btn.getAttribute('data-target');
-            if (target === currentSection) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            if (target === currentSection) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
     }
-    
-    // Panggil saat scroll dan saat load
     window.addEventListener('scroll', updateActiveButton);
     window.addEventListener('load', updateActiveButton);
 }
@@ -279,11 +287,52 @@ function smoothScrollToSection(sectionId) {
     if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// BACK TO TOP
+function initBackToTop() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) btn.style.display = 'flex';
+        else btn.style.display = 'none';
+    });
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+// DATA CONTOH (tombol)
+function initDataContoh() {
+    const btn = document.getElementById('btnDataContoh');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+        const lokasiSelect = document.getElementById('lokasi');
+        const lokasiId = lokasiSelect.value;
+        if (!lokasiId || !dataITS[lokasiId]) {
+            alert('Pilih lokasi terlebih dahulu!');
+            return;
+        }
+        const data = dataITS[lokasiId];
+        document.getElementById('mobil').value = data.mobil;
+        document.getElementById('motor').value = data.motor;
+        const infoDiv = document.getElementById('lokasiInfo');
+        if (infoDiv) {
+            infoDiv.style.display = 'block';
+            infoDiv.innerHTML = `<strong>✅ Data contoh terisi!</strong><br>Mobil: ${data.mobil}, Motor: ${data.motor}. Anda masih bisa mengedit manual.`;
+            setTimeout(() => {
+                if (infoDiv.innerHTML.includes('Data contoh terisi')) {
+                    infoDiv.style.display = 'none';
+                }
+            }, 3000);
+        }
+    });
+}
+
 window.addEventListener('load', () => {
     document.getElementById('mobil').value = '';
     document.getElementById('motor').value = '';
     document.getElementById('waktu').value = 90;
     initLokasiListener();
+    initDataContoh();
     
     const navBtns = document.querySelectorAll('.nav-scroll-btn');
     navBtns.forEach(btn => {
@@ -302,4 +351,5 @@ window.addEventListener('load', () => {
     document.getElementById('integralInfo').innerHTML = '<p>👈 Masukkan data lalu klik "Hitung Emisi CO₂"</p>';
     
     initScrollSpy();
+    initBackToTop();
 });

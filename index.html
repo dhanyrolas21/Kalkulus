@@ -52,6 +52,7 @@
                         <option value="sutomo_yamin">Sutomo - Yamin</option>
                         <option value="perintis_sutomo">Perintis Kemerdekaan - Sutomo</option>
                     </select>
+                    <button type="button" id="btnDataContoh" class="btn-data-contoh">📋 Gunakan Data Contoh</button>
                 </div>
                 <div class="form-group">
                     <label for="mobil">🚗 Jumlah Mobil:</label>
@@ -86,13 +87,15 @@
                     <div class="rumus">
                         <p class="rumus-title">Integral Tentu (Metode Left Riemann Sum)</p>
                         <p class="rumus-tex">E = ∫₀ᵀ r(t) dt ≈ Σ_{i=0}^{n-1} r(t_i) · Δt</p>
-                        <p>dengan Δt = 1 detik, tᵢ = i·Δt, n = T (waktu merah).</p>
-                        <p class="rumus-note">Karena r(t) konstan, hasil eksak sama dengan r × T.</p>
+                        <p>dengan Δt = 1 detik, tᵢ = i·Δt, n = T (waktu merah dalam detik).</p>
+                        <p class="rumus-note">✨ Karena r(t) konstan, hasil eksak sama dengan r × T.</p>
                     </div>
                     <div class="rumus">
                         <p class="rumus-title">Laju Emisi (konstan):</p>
                         <p class="rumus-tex">r = (M × 0.04) + (Mtr × 0.015) gram/detik</p>
                         <p>Mobil: 2.4 g/menit ≈ 0.04 g/detik | Motor: 0.9 g/menit ≈ 0.015 g/detik</p>
+                        <p class="rumus-note">📚 <strong>Sumber:</strong> Mobil: US EPA (2021); Motor: Putri et al., Jurnal Teknik Mesin UI (2021).</p>
+                        <p class="rumus-note">⚠️ <strong>Catatan:</strong> Perhitungan ini hanya mengestimasi emisi saat kendaraan dalam keadaan <strong>idle</strong> (mesin menyala tapi diam), seperti saat menunggu lampu merah. Emisi saat akselerasi tidak termasuk.</p>
                     </div>
                 </div>
             </div>
@@ -112,7 +115,7 @@
 
             <div class="card chart-card">
                 <h3>📊 Visualisasi Kurva Emisi CO₂ terhadap Waktu</h3>
-                <p class="chart-caption">🔴 MERAH = Akumulasi Emisi (gram) | 🔵 BIRU = Laju Emisi (gram/detik)</p>
+                <p class="chart-caption">🔴 MERAH = Akumulasi Emisi (gram) | 🔵 BIRU = Laju Emisi (gram/detik) dengan area di bawah kurva biru menunjukkan total emisi (luas = integral).</p>
                 <canvas id="emisiChart" width="800" height="400"></canvas>
                 <div class="integral-info" id="integralInfo">
                     <p>👈 Masukkan data lalu klik "Hitung Emisi CO₂"</p>
@@ -127,6 +130,9 @@
                         <p class="formula">r(t) = (2t + 5) / (t² + 5t + 6)</p>
                         <p>Didekomposisi menjadi:</p>
                         <p class="formula">r(t) = 1/(t+2) + 1/(t+3)</p>
+                        <p><strong>Hasil integral tak tentu:</strong></p>
+                        <p class="formula">∫ r(t) dt = ln|t+2| + ln|t+3| + C</p>
+                        <p class="rumus-note">✨ Integral ini menunjukkan akumulasi jumlah kendaraan terhadap waktu.</p>
                     </div>
                     <div class="math-result">
                         <p>⏳ Laju akumulasi antrian pada t = <span id="tValue">30</span> detik:</p>
@@ -139,8 +145,22 @@
                 <h3>📋 Riwayat Perhitungan Emisi</h3>
                 <div class="table-container">
                     <table class="history-table">
-                        <thead><tr><th>Waktu</th><th>Lokasi</th><th>Mobil</th><th>Motor</th><th>Durasi</th><th>Total Emisi</th><th>Level</th></tr></thead>
-                        <tbody id="historyBody"><tr><td colspan="7">Belum ada data. Hitung emisi terlebih dahulu.</td></tr></tbody>
+                        <thead>
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Lokasi</th>
+                                <th>Mobil</th>
+                                <th>Motor</th>
+                                <th>Durasi</th>
+                                <th>Total Emisi</th>
+                                <th>Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <tr>
+                                <td colspan="7">Belum ada data. Hitung emisi terlebih dahulu.</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
                 <button onclick="clearHistory()" class="btn-clear">🗑️ Hapus Riwayat</button>
@@ -209,8 +229,12 @@
 
         <footer>
             <p>© 2026 - Project Kalkulus Integral | Metode Numerik: Left Riemann Sum (Δt=1 detik) | Teknik Pecahan Parsial untuk model antrian</p>
+            <p>📚 Sumber laju emisi: Mobil 2.4 g/menit (US EPA, 2021); Motor 0.9 g/menit (Putri et al., Jurnal Teknik Mesin UI, 2021)</p>
+            <p>⚠️ Perhitungan hanya untuk kondisi idle (mesin menyala diam). Emisi akselerasi tidak termasuk.</p>
         </footer>
     </div>
+
+    <button id="backToTop" class="back-to-top" title="Kembali ke atas">↑</button>
 
     <script src="script.js"></script>
 </body>

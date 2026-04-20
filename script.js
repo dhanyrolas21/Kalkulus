@@ -11,8 +11,8 @@ const LAJU_MOBIL_DASAR = EMISI_MOBIL_PER_MENIT / 60;   // 0.04 g/detik
 const LAJU_MOTOR_DASAR = EMISI_MOTOR_PER_MENIT / 60;   // 0.015 g/detik
 
 // Variabel untuk menyimpan instance chart
-let chart = null;          // grafik kurva di halaman Analisis
-let historyChart = null;   // grafik batang di Dashboard
+let chart = null;
+let historyChart = null;
 
 // Array untuk menyimpan data riwayat perhitungan
 let historyData = [];
@@ -21,83 +21,73 @@ let historyData = [];
 const dataITS = {
     jamin_ginting: {
         nama: "Jamin Ginting - Iskandar Muda",
-        mobil: 22,
-        motor: 38,
-        keterangan: "Persimpangan utama menuju kampus ITS"
+        mobil: 11,
+        motor: 20,
+        keterangan: "Pertemuan arus kendaraan dari perumahan padat, pusat perbelanjaan, dan akses ke kawasan pendidikan serta perkantoran"
     },
     gatot_subroto: {
         nama: "Gatot Subroto - Iskandar Muda",
-        mobil: 18,
-        motor: 30,
-        keterangan: "Lalu lintas sedang"
+        mobil: 10,
+        motor: 17,
+        keterangan: "Persimpangan dekat dengan area perkantoran dan pemukiman"
     },
     iskandar_lubis: {
         nama: "Iskandar Muda - Abdullah Lubis",
-        mobil: 14,
-        motor: 25,
-        keterangan: "Dekat pasar tradisional"
+        mobil: 13,
+        motor: 22,
+        keterangan: "Aktivitas pasar tradisional dan sekolah di sekitar persimpangan"
     },
     yamin_william: {
         nama: "HM. Yamin - William Iskandar",
         mobil: 12,
         motor: 20,
-        keterangan: "Area pendidikan"
+        keterangan: "Berada di kawasan pendidikan dan perkantoran"
     },
     katamso_anidrus: {
         nama: "Katamso - Ani Idrus",
-        mobil: 16,
-        motor: 28,
-        keterangan: "Dekat rumah sakit"
+        mobil: 12,
+        motor: 19,
+        keterangan: "Persimpangan dekat rumah sakit dan pusat perbelanjaan"
     },
     sutomo_yamin: {
         nama: "Sutomo - Yamin",
         mobil: 10,
         motor: 18,
-        keterangan: "Lalu lintas ringan"
+        keterangan: "Persimpangan yang menghubungkan Pemukiman dan perkantoran"
     },
     perintis_sutomo: {
         nama: "Perintis Kemerdekaan - Sutomo",
-        mobil: 25,
-        motor: 42,
-        keterangan: "Persimpangan tersibuk"
+        mobil: 15,
+        motor: 22,
+        keterangan: "Menghubungkan beberapa kawasan pemukiman padat dan pusat kota"
     }
 };
+
 
 // ======================================================================
 //                         FUNGSI PERHITUNGAN DASAR
 // ======================================================================
 
-/**
- * Menghitung laju emisi total (gram/detik) berdasarkan jumlah mobil dan motor.
- * Asumsi: laju konstan (tidak berubah terhadap waktu).
- */
 function hitungLajuEmisi(mobil, motor) {
     return (mobil * LAJU_MOBIL_DASAR) + (motor * LAJU_MOTOR_DASAR);
 }
 
-/**
- * Menghitung akumulasi emisi menggunakan metode Left Riemann Sum.
- * Δt = 1 detik, partisi seragam dari 0 hingga waktuDetik.
- */
 function hitungAkumulasiEmisiRiemann(mobil, motor, waktuDetik) {
-    let dt = 1;                     // lebar partisi 1 detik
-    let n = waktuDetik;             // jumlah subinterval
-    let total = 0;                  // total emisi (akumulasi)
-    let dataWaktu = [];             // array untuk sumbu X (waktu)
-    let dataLaju = [];              // array untuk nilai laju emisi
-    let dataAkumulasi = [];         // array untuk nilai akumulasi
-    let akumulasi = 0;              // akumulasi sementara
+    let dt = 1;
+    let n = waktuDetik;
+    let total = 0;
+    let dataWaktu = [];
+    let dataLaju = [];
+    let dataAkumulasi = [];
+    let akumulasi = 0;
 
     for (let i = 0; i <= n; i++) {
-        let t = i * dt;             // waktu saat ini
+        let t = i * dt;
         let laju = hitungLajuEmisi(mobil, motor);
-
-        // Left Riemann Sum: tambahkan luas persegi panjang (laju * dt)
         if (i < n) {
             total += laju * dt;
             akumulasi = total;
         }
-
         dataWaktu.push(t);
         dataLaju.push(parseFloat(laju.toFixed(4)));
         dataAkumulasi.push(parseFloat(akumulasi.toFixed(2)));
@@ -115,9 +105,6 @@ function hitungAkumulasiEmisiRiemann(mobil, motor, waktuDetik) {
 //                         GRAFIK KURVA (LINE CHART) - ANALISIS
 // ======================================================================
 
-/**
- * Memperbarui grafik kurva (akumulasi merah, laju biru dengan fill).
- */
 function updateGrafikKurva(waktuArray, lajuArray, akumulasiArray, totalEmisi, waktuDetik, mobil, motor) {
     const ctx = document.getElementById('emisiChart').getContext('2d');
     if (chart) chart.destroy();
@@ -189,20 +176,16 @@ function updateGrafikKurva(waktuArray, lajuArray, akumulasiArray, totalEmisi, wa
     });
 
     let lokasiTerpilih = document.getElementById('lokasi').options[document.getElementById('lokasi').selectedIndex]?.text || 'Tidak dipilih';
-    document.getElementById('integralInfo').innerHTML = `
-        <p><strong>∫₀^${waktuDetik} r(t) dt ≈ Σ r(t_i)·1 = ${totalEmisi.toFixed(2)} gram</strong> (Metode Left Riemann Sum, Δt=1 detik)</p>
-        <p>📍 ${lokasiTerpilih} | 🚗 ${mobil} mobil | 🏍️ ${motor} motor | ⏱️ ${waktuDetik} detik</p>
-        <p class="rumus-note">✨ Area biru di bawah kurva laju menunjukkan luas = total emisi.</p>
-    `;
-}
+document.getElementById('integralInfo').innerHTML = `
+    <p><strong>∫₀^${waktuDetik} r(t) dt ≈ Σ_{i=0}^{n-1} r(t_i) · 1 = ${totalEmisi.toFixed(2)} gram</strong> (Metode Left Riemann Sum, Δt=1 detik)</p>
+    <p>📍 ${lokasiTerpilih} | 🚗 ${mobil} mobil | 🏍️ ${motor} motor | ⏱️ ${waktuDetik} detik</p>
+    <p class="rumus-note">✨ Area biru di bawah kurva laju menunjukkan luas = total emisi.</p>
+`;}
 
 // ======================================================================
 //                         GRAFIK BATANG (BAR CHART) - DASHBOARD
 // ======================================================================
 
-/**
- * Memperbarui grafik batang pada dashboard berdasarkan historyData.
- */
 function updateHistoryChart() {
     const ctx = document.getElementById('historyChart').getContext('2d');
     if (historyChart) historyChart.destroy();
@@ -238,7 +221,6 @@ function updateHistoryChart() {
         return;
     }
 
-    // Urutkan data dari yang lama ke baru (agar grafik rapi)
     let sorted = [...historyData].reverse();
     let labels = sorted.map(item => item.waktuLabel);
     let emisiValues = sorted.map(item => item.totalEmisi);
@@ -280,10 +262,6 @@ function updateHistoryChart() {
 //                         UPDATE INFO DASHBOARD (LOKASI & JAM)
 // ======================================================================
 
-/**
- * Menampilkan informasi perhitungan terakhir (lokasi dan jam) di bawah grafik batang.
- * Pastikan di file index.html ada elemen <div id="dashboardInfo"></div>
- */
 function updateDashboardInfo() {
     const infoDiv = document.getElementById('dashboardInfo');
     if (!infoDiv) return;
@@ -293,7 +271,7 @@ function updateDashboardInfo() {
         return;
     }
 
-    const last = historyData[0]; // data terbaru (paling atas)
+    const last = historyData[0];
     infoDiv.innerHTML = `
         <div style="background: var(--surface-2); padding: 12px; border-radius: 12px; margin-top: 16px; text-align: center;">
             <strong>📍 Perhitungan terakhir:</strong> ${last.lokasi}<br>
@@ -306,9 +284,6 @@ function updateDashboardInfo() {
 //                         REKOMENDASI DINAMIS
 // ======================================================================
 
-/**
- * Memperbarui rekomendasi berdasarkan hasil hitungan terakhir.
- */
 function updateRekomendasiDinamis(totalEmisi, mobil, motor, waktu) {
     let pesan = '';
     if (totalEmisi <= 50) {
@@ -333,9 +308,6 @@ function updateRekomendasiDinamis(totalEmisi, mobil, motor, waktu) {
 //                         FUNGSI HISTORY (TABEL)
 // ======================================================================
 
-/**
- * Menentukan level risiko berdasarkan total emisi.
- */
 function getLevel(totalEmisi) {
     if (totalEmisi <= 50) return 'Rendah';
     if (totalEmisi <= 100) return 'Sedang';
@@ -343,15 +315,11 @@ function getLevel(totalEmisi) {
     return 'Ekstrem';
 }
 
-/**
- * Menambahkan hasil perhitungan ke dalam riwayat (history).
- */
 function addToHistory(lokasiNama, mobil, motor, waktu, totalEmisi) {
     const now = new Date();
     const waktuLabel = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' ' + now.toLocaleDateString('id-ID');
     const level = getLevel(totalEmisi);
 
-    // Tambahkan ke awal array (data terbaru di atas)
     historyData.unshift({
         waktuLabel: waktuLabel,
         lokasi: lokasiNama,
@@ -362,26 +330,19 @@ function addToHistory(lokasiNama, mobil, motor, waktu, totalEmisi) {
         level: level
     });
 
-    // Batasi maksimal 20 data
-    if (historyData.length > 20) {
-        historyData.pop();
-    }
+    if (historyData.length > 20) historyData.pop();
 
-    // Perbarui tabel dan grafik
     updateHistoryTable();
     updateHistoryChart();
-    updateDashboardInfo(); // <-- tambahan untuk info dashboard
+    updateDashboardInfo();
 }
 
-/**
- * Memperbarui tampilan tabel riwayat.
- */
 function updateHistoryTable() {
     const tbody = document.getElementById('historyBody');
     if (!tbody) return;
 
     if (historyData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7">Belum ada data. Hitung emisi terlebih dahulu.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Belum ada data. Hitung emisi terlebih dahulu.</td></tr>';
         return;
     }
 
@@ -408,9 +369,6 @@ function updateHistoryTable() {
     tbody.innerHTML = html;
 }
 
-/**
- * Menghapus semua riwayat.
- */
 function clearHistory() {
     if (confirm('Hapus semua riwayat?')) {
         historyData = [];
@@ -425,63 +383,43 @@ function clearHistory() {
 //                         FUNGSI UTAMA (HITUNG EMISI)
 // ======================================================================
 
-/**
- * Fungsi utama yang dipanggil saat tombol "Hitung Emisi CO₂" diklik.
- * Membaca input, menghitung emisi, memperbarui grafik dan history.
- */
 function hitungEmisi() {
-    // Baca nilai input
     let mobil = parseInt(document.getElementById('mobil').value) || 0;
     let motor = parseInt(document.getElementById('motor').value) || 0;
-    let waktuDetik = parseInt(document.getElementById('waktu').value) || 90;
+    let waktuDetik = parseInt(document.getElementById('waktu').value) || 60;  // default 60 detik
 
-    // Validasi
     if (mobil < 0) mobil = 0;
     if (motor < 0) motor = 0;
     if (waktuDetik < 1) waktuDetik = 1;
 
-    // Simpan nilai input kembali (memastikan konsistensi)
     document.getElementById('mobil').value = mobil;
     document.getElementById('motor').value = motor;
     document.getElementById('waktu').value = waktuDetik;
 
-    // Hitung akumulasi emisi dengan metode Left Riemann Sum
     let { dataWaktu, dataLaju, dataAkumulasi, totalEmisi } = hitungAkumulasiEmisiRiemann(mobil, motor, waktuDetik);
 
-    // Hitung proporsi emisi dari mobil dan motor (berdasarkan laju dasar)
     let totalLajuDasar = (mobil * LAJU_MOBIL_DASAR) + (motor * LAJU_MOTOR_DASAR);
     let proporsiMobil = totalLajuDasar > 0 ? (mobil * LAJU_MOBIL_DASAR) / totalLajuDasar : 0;
     let emisiMobilGram = totalEmisi * proporsiMobil;
     let emisiMotorGram = totalEmisi * (1 - proporsiMobil);
 
-    // Tampilkan hasil di card Hasil Estimasi
     document.getElementById('totalEmisi').innerHTML = totalEmisi.toFixed(2);
     document.getElementById('emisiMobil').innerHTML = emisiMobilGram.toFixed(2);
     document.getElementById('emisiMotor').innerHTML = emisiMotorGram.toFixed(2);
     document.getElementById('perSiklus').innerHTML = (totalEmisi / 1000).toFixed(4);
-    document.getElementById('perJam').innerHTML = ((totalEmisi / 1000) * 20).toFixed(3);
-
-    // Update grafik kurva
+    
     updateGrafikKurva(dataWaktu, dataLaju, dataAkumulasi, totalEmisi, waktuDetik, mobil, motor);
 
-    // Ambil nama lokasi yang dipilih (untuk dicatat di history)
     let lokasiSelect = document.getElementById('lokasi');
     let lokasiNama = lokasiSelect.options[lokasiSelect.selectedIndex]?.text || 'Tidak dipilih';
+    if (mobil > 0 || motor > 0) addToHistory(lokasiNama, mobil, motor, waktuDetik, totalEmisi);
 
-    // Tambahkan ke history jika ada kendaraan
-    if (mobil > 0 || motor > 0) {
-        addToHistory(lokasiNama, mobil, motor, waktuDetik, totalEmisi);
-    }
-
-    // Update rekomendasi dinamis
     updateRekomendasiDinamis(totalEmisi, mobil, motor, waktuDetik);
 
-    // Update tampilan pecahan parsial (laju akumulasi antrian)
     let lajuParsial = (1 / (waktuDetik + 2)) + (1 / (waktuDetik + 3));
     document.getElementById('lajuAkumulasi').innerHTML = lajuParsial.toFixed(4);
     document.getElementById('tValue').innerHTML = waktuDetik;
 
-    // Animasi tombol (efek klik)
     const btn = document.querySelector('.btn-primary');
     if (btn) {
         btn.style.transform = 'scale(0.98)';
@@ -493,10 +431,6 @@ function hitungEmisi() {
 //                         DATA CONTOH & LOKASI INFO
 // ======================================================================
 
-/**
- * Inisialisasi tombol "Gunakan Data Contoh".
- * Saat diklik, akan mengisi input mobil dan motor dengan data dari lokasi yang dipilih.
- */
 function initDataContoh() {
     const btn = document.getElementById('btnDataContoh');
     if (!btn) return;
@@ -504,12 +438,10 @@ function initDataContoh() {
     btn.addEventListener('click', () => {
         const lokasiSelect = document.getElementById('lokasi');
         const lokasiId = lokasiSelect.value;
-
         if (!lokasiId || !dataITS[lokasiId]) {
             alert('Pilih lokasi terlebih dahulu!');
             return;
         }
-
         const data = dataITS[lokasiId];
         document.getElementById('mobil').value = data.mobil;
         document.getElementById('motor').value = data.motor;
@@ -523,10 +455,6 @@ function initDataContoh() {
     });
 }
 
-/**
- * Inisialisasi listener untuk pilihan lokasi.
- * Hanya menampilkan info, tidak mengisi input otomatis.
- */
 function initLokasiListener() {
     const lokasiSelect = document.getElementById('lokasi');
     const lokasiInfoDiv = document.getElementById('lokasiInfo');
@@ -547,16 +475,13 @@ function initLokasiListener() {
 //                         SCROLL SPY & BACK TO TOP
 // ======================================================================
 
-/**
- * Inisialisasi scroll spy: mengaktifkan tombol navigasi sesuai section yang terlihat.
- */
 function initScrollSpy() {
     const sections = ['dashboard-section', 'analisis-section', 'dampak-section', 'rekomendasi-section'];
     const navBtns = document.querySelectorAll('.nav-btn');
 
     function updateActiveButton() {
         let currentSection = '';
-        const scrollPosition = window.scrollY + 120; // offset untuk sticky nav
+        const scrollPosition = window.scrollY + 120;
 
         for (let section of sections) {
             const el = document.getElementById(section);
@@ -568,11 +493,8 @@ function initScrollSpy() {
 
         navBtns.forEach(btn => {
             const target = btn.getAttribute('data-target');
-            if (target === currentSection) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            if (target === currentSection) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
     }
 
@@ -580,43 +502,27 @@ function initScrollSpy() {
     window.addEventListener('load', updateActiveButton);
 }
 
-/**
- * Smooth scroll ke section tertentu.
- */
 function smoothScrollToSection(sectionId) {
     const section = document.getElementById(sectionId + '-section');
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/**
- * Inisialisasi tombol "Back to Top".
- */
 function initBackToTop() {
     const btn = document.getElementById('backToTop');
     if (!btn) return;
 
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-            btn.style.display = 'flex';
-        } else {
-            btn.style.display = 'none';
-        }
+        if (window.scrollY > 300) btn.style.display = 'flex';
+        else btn.style.display = 'none';
     });
 
-    btn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
 // ======================================================================
 //                         JAM REAL-TIME WIB
 // ======================================================================
 
-/**
- * Memperbarui jam digital setiap detik.
- */
 function updateClock() {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
@@ -628,7 +534,6 @@ function updateClock() {
     }
 }
 
-// Jalankan updateClock setiap detik
 setInterval(updateClock, 1000);
 updateClock();
 
@@ -636,10 +541,6 @@ updateClock();
 //                         DARK / LIGHT MODE TOGGLE
 // ======================================================================
 
-/**
- * Inisialisasi tombol toggle dark/light mode.
- * Menyimpan preferensi ke localStorage.
- */
 function initThemeToggle() {
     const toggle = document.getElementById('themeToggle');
     if (!toggle) return;
@@ -647,7 +548,6 @@ function initThemeToggle() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
 
-    // Atur tema awal
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
         document.body.classList.add('dark');
         toggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -656,21 +556,13 @@ function initThemeToggle() {
         toggle.innerHTML = '<i class="fas fa-moon"></i>';
     }
 
-    // Event listener untuk toggle
     toggle.addEventListener('click', () => {
         document.body.classList.toggle('dark');
         const isDark = document.body.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
-        // Refresh chart agar warna menyesuaikan (opsional, tidak merusak data)
-        if (historyData.length) {
-            updateHistoryChart();
-        }
-        if (chart) {
-            chart.destroy();
-            chart = null;
-        }
+        if (historyData.length) updateHistoryChart();
+        if (chart) { chart.destroy(); chart = null; }
     });
 }
 
@@ -679,22 +571,16 @@ function initThemeToggle() {
 // ======================================================================
 
 window.addEventListener('load', () => {
-    // Set nilai awal (kosong, kecuali waktu default 90)
-    const mobilInput = document.getElementById('mobil');
-    const motorInput = document.getElementById('motor');
-    const waktuInput = document.getElementById('waktu');
-    if (mobilInput) mobilInput.value = '';
-    if (motorInput) motorInput.value = '';
-    if (waktuInput) waktuInput.value = 90;
+    document.getElementById('mobil').value = '';
+    document.getElementById('motor').value = '';
+    document.getElementById('waktu').value = 60;  // default 60 detik
 
-    // Inisialisasi berbagai fitur
     initLokasiListener();
     initDataContoh();
     initScrollSpy();
     initBackToTop();
     initThemeToggle();
 
-    // Event listener untuk tombol navigasi (smooth scroll)
     const navBtns = document.querySelectorAll('.nav-btn');
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -703,7 +589,6 @@ window.addEventListener('load', () => {
         });
     });
 
-    // Inisialisasi grafik kosong
     const ctxKurva = document.getElementById('emisiChart');
     if (ctxKurva) {
         chart = new Chart(ctxKurva.getContext('2d'), {

@@ -39,13 +39,13 @@ const dataITS = {
     },
     yamin_william: {
         nama: "HM. Yamin - William Iskandar",
-        mobil: 12,
-        motor: 20,
+        mobil: 17,
+        motor: 26,
         keterangan: "Berada di kawasan pendidikan dan perkantoran"
     },
     katamso_anidrus: {
         nama: "Katamso - Ani Idrus",
-        mobil: 12,
+        mobil: 14,
         motor: 19,
         keterangan: "Persimpangan dekat rumah sakit dan pusat perbelanjaan"
     },

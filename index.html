@@ -14,16 +14,31 @@
     <!-- Chart.js untuk grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
+    <!-- Chart.js untuk grafik -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Leaflet untuk Peta (BARU) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- MathJax untuk render rumus LaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
     <!-- MathJax untuk render rumus LaTeX dengan sempurna -->
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet CSS & JS untuk Peta -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 </head>
 <body>
     <div class="app-container">
         <!-- Header utama -->
         <header class="main-header">
-            <h1 class="main-title">🌿 Estimasi Emisi CO₂ Akibat Kemacetan<br>di Lampu Merah Kota Medan</h1>
+            <h1 class="main-title">🌿 Estimasi Emisi CO₂ Kemacetan<br>di Lampu Merah Kota Medan</h1>
             <p class="subtitle">Pendekatan Integral Tentu & Teknik Pecahan Parsial | Studi Kasus: 7 Lokasi Sekitar ITS Medan</p>
         </header>
 
@@ -64,6 +79,40 @@
             </div>
         </section>
 
+        <section id="dashboard-section" class="content-section">
+    <div class="section-header">
+        <h2 class="section-title">📊 Dashboard</h2>
+        <div class="title-underline"></div>
+    </div>
+
+    <!-- GRAFIK RIWAYAT (sudah ada) -->
+    <div class="card">
+        <h3><i class="fas fa-chart-line"></i> Grafik Riwayat Emisi</h3>
+        <canvas id="riwayatChart"></canvas>
+        <canvas id="emisiVsWaktuChart"></canvas>
+    </div>
+
+        <!-- ==================== PETA EMISI (HEATMAP) ==================== -->
+        <section id="peta-section" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> 🗺️ Peta Emisi CO₂ Kota Medan</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="card">
+                <p class="chart-caption">
+                    🔴🟢 Ukuran dan warna lingkaran menunjukkan besarnya emisi CO₂ per siklus (60 detik).<br>
+                    💡 Klik pada lingkaran untuk melihat detail lokasi. Geser dan zoom untuk eksplorasi.
+                </p>
+                <div id="petaContainer" style="height: 500px; width: 100%; border-radius: 12px; overflow: hidden; margin-top: 15px;">
+                    <div id="map" style="height: 100%; width: 100%;"></div>
+                </div>
+                <div id="peta-legenda-container">
+                    <!-- Legenda akan diisi JavaScript -->
+                </div>
+            </div>
+        </section>
+        
+
         <!-- ==================== ANALISIS SECTION ==================== -->
         <section id="analisis-section" class="content-section">
             <div class="section-header">
@@ -85,6 +134,8 @@
                         <option value="katamso_anidrus">Katamso - Ani Idrus</option>
                         <option value="sutomo_yamin">Sutomo - Yamin</option>
                         <option value="perintis_sutomo">Perintis Kemerdekaan - Sutomo</option>
+                        <option value="kesawan_palang_merah">Kesawan - Palang Merah</option>
+
                     </select>
                     <button type="button" id="btnDataContoh" class="btn-outline"><i class="fas fa-database"></i> Gunakan Data Contoh</button>
                 </div>
@@ -202,6 +253,50 @@
                 <div class="title-underline"></div>
             </div>
             <div class="card">
+                <!-- Riwayat Perhitungan Emisi (existing) -->
+<div class="riwayat-section">...</div>
+
+<!-- 🆕 PERBANDINGAN LOKASI (fitur baru) -->
+<section id="perbandingan-section" class="content-section">
+    <h2><i class="fas fa-chart-simple"></i> 📊 Perbandingan Semua Lokasi</h2>
+    <div class="card">
+        <div style="margin-bottom: 15px; font-size: 0.9em; color: #666;">
+            ⏱️ Berdasarkan durasi lampu merah <strong>60 detik</strong> (default)
+        </div>
+        <div id="tabel-perbandingan-container">
+            <!-- Tabel akan di-generate oleh JavaScript -->
+        </div>
+    </div>
+</section>
+        <!-- ==================== ANALISIS MULTI-DURASI ==================== -->
+        <section id="multidurasi-section" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> ⏱️ Analisis Emisi Multi-Durasi</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="card">
+                <p class="chart-caption">
+                    📊 Tabel ini menunjukkan estimasi emisi CO₂ (gram) untuk setiap lokasi pada berbagai durasi lampu merah.<br>
+                    🟢 Hijau = emisi rendah | 🟡 Kuning = emisi sedang | 🔴 Merah = emisi tinggi (per kolom)
+                </p>
+                <div style="overflow-x: auto;">
+                    <table id="multidurasi-table" class="multidurasi-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead id="multidurasi-header">
+                            <!-- Header akan diisi JavaScript -->
+                        </thead>
+                        <tbody id="multidurasi-body">
+                            <!-- Body akan diisi JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 15px; text-align: center; font-size: 12px; color: #666;">
+                    💡 Warna berdasarkan persentil per kolom: 🔴 Teratas 30% | 🟡 Tengah 40% | 🟢 Bawah 30%
+                </div>
+            </div>
+        </section>
+
+<!-- Dampak CO₂ (existing) -->
+<div class="dampak-section">...</div>
                 <h3>✅ Dampak Positif (Dalam Kadar Normal)</h3>
                 <div class="icon-grid">
                     <div class="icon-card"><i class="fas fa-leaf"></i><h4>Fotosintesis Tanaman</h4><p>CO₂ adalah bahan utama fotosintesis yang menghasilkan oksigen.</p></div>
@@ -259,3 +354,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

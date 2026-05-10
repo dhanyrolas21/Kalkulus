@@ -4,7 +4,7 @@
 
 :root {
     /* Light mode (default) */
-    --bg-body: #f5f7fa;
+    --bg-body: #8de0ce;
     --surface: #ffffff;
     --surface-2: #f8fafc;
     --text-primary: #1e293b;
@@ -587,4 +587,215 @@ select:focus {
     .stats-row {
         flex-direction: column;
     }
+}
+
+/* Tabel Perbandingan Lokasi */
+.perbandingan-table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.perbandingan-table th {
+    font-weight: 600;
+    text-align: center;
+}
+
+.perbandingan-table tr:hover {
+    background-color: #f5f5f5;
+    transition: background-color 0.2s;
+}
+
+@media (max-width: 768px) {
+    .perbandingan-table {
+        font-size: 12px;
+    }
+    .perbandingan-table th,
+    .perbandingan-table td {
+        padding: 8px 4px;
+    }
+}
+
+/* Live Chart Container */
+#liveChartContainer {
+    background: #fef9f9;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.chart-controls button {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.chart-controls button:hover {
+    background: #e74c3c;
+}
+
+.chart-caption {
+    font-size: 12px;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+/* =============================================================== */
+/*                    PETA HEATMAP (LEAFLET)                       */
+/* =============================================================== */
+
+.leaflet-container {
+    border-radius: 12px;
+    z-index: 1;
+    font-family: 'Poppins', sans-serif;
+}
+
+.leaflet-popup-content {
+    font-size: 14px;
+    line-height: 1.5;
+    min-width: 220px;
+}
+
+.leaflet-popup-content strong {
+    color: #2c3e50;
+}
+
+/* Legenda Peta */
+.peta-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin: 0 4px;
+}
+
+.peta-legend .circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+#peta-legenda-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+/* Custom Pin Marker */
+.custom-pin-marker {
+    background: transparent;
+    border: none;
+}
+
+.custom-pin-marker svg {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.2s ease;
+}
+
+.custom-pin-marker svg:hover {
+    transform: scale(1.1);
+}
+
+/* =============================================================== */
+/*                    ANALISIS MULTI-DURASI                       */
+/* =============================================================== */
+
+.multidurasi-table {
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.multidurasi-table th,
+.multidurasi-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+}
+
+.multidurasi-table th {
+    background: #2c3e50;
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+.multidurasi-table th:first-child,
+.multidurasi-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--surface);
+    font-weight: 600;
+    text-align: left;
+    z-index: 1;
+}
+
+.multidurasi-table tr:hover td:first-child {
+    background: var(--surface-2);
+}
+
+.multidurasi-table td {
+    transition: background 0.2s;
+}
+
+/* Warna sel berdasarkan tingkat emisi - VERSION BOLD & MENCOLOK */
+.cell-rendah {
+    background-color: #2ecc71 !important;  /* Hijau terang */
+    color: #ffffff !important;              /* Tulisan putih */
+    font-weight: 600;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.cell-sedang {
+    background-color: #f39c12 !important;  /* Oranye/Kuning terang */
+    color: #ffffff !important;
+    font-weight: 600;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.cell-tinggi {
+    background-color: #e74c3c !important;  /* Merah terang */
+    color: #ffffff !important;
+    font-weight: 600;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+/* Dark mode support - tetap menggunakan warna berani */
+body.dark .cell-rendah {
+    background-color: #27ae60 !important;
+    color: #ffffff !important;
+}
+
+body.dark .cell-sedang {
+    background-color: #e67e22 !important;
+    color: #ffffff !important;
+}
+
+body.dark .cell-tinggi {
+    background-color: #c0392b !important;
+    color: #ffffff !important;
+}
+
+/* Efek hover pada sel */
+.cell-rendah:hover,
+.cell-sedang:hover,
+.cell-tinggi:hover {
+    filter: brightness(0.9);
+    cursor: pointer;
 }
